@@ -1,0 +1,9 @@
+.git/
+build/
+**/build/
+**/CMakeCache.txt
+**/.git/
+docker/
+plottertest/
+results/
+results-paper/

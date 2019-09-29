@@ -1,0 +1,5 @@
+add_subdirectory(common-test/)
+add_subdirectory(cleartext-fixed/)
+add_subdirectory(aby-float/)
+add_subdirectory(emp-float/)
+add_subdirectory(emp-fixed/)

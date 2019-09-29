@@ -1,0 +1,21 @@
+[submodule "opencv"]
+	path = extern/opencv
+	url = https://github.com/opencv/opencv
+[submodule "opencv_contrib"]
+	path = extern/opencv_contrib
+	url = https://github.com/opencv/opencv_contrib
+[submodule "ABY"]
+	path = extern/ABY
+	url = ../server-aby
+[submodule "extern/emp-tool"]
+	path = extern/emp-tool
+	url = ../server-emp-tool
+[submodule "extern/emp-sh2pc"]
+	path = extern/emp-sh2pc
+	url = ../server-emp-sh2pc
+[submodule "extern/emp-ot"]
+	path = extern/emp-ot
+	url = https://github.com/emp-toolkit/emp-ot
+[submodule "extern/Catch2"]
+	path = extern/Catch2
+	url = https://github.com/catchorg/Catch2

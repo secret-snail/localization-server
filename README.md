@@ -45,8 +45,9 @@ intermediate ciphertext stored as secret share.
 ## Experimental Evaluation
 First, download the
 [eth3d dataset](https://www.eth3d.net/datasets#high-res-multi-view) with the
-following commands. These will specifically download the high-res multi-view
-undistorted images and ground truth scan evaluation from eth3d.
+following commands on the host (outside the container). These will specifically
+download the high-res multi-view undistorted images and ground truth scan
+evaluation from eth3d.
 ```bash
 sudo apt-get install p7zip-full
 mkdir ./data-eth3d
@@ -69,6 +70,7 @@ mkdir -p results
 docker run -it --rm --init \
   --net=host \
   --name snail-tester \
+  --volume "$(pwd)/data-eth3d":/snail/data-eth3d \
   --volume "$(pwd)/results":/snail/results \
   snail-server bash
 ```

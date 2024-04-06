@@ -7,62 +7,37 @@ on:
     branches: [ "master" ]
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
 jobs:
   build:
-    runs-on: [self-hosted, linux, x64]
+    runs-on: [snail-runners]
 
     steps:
-    - name: Copy Runner Env to Workflow Env
-      run: |
-        echo "::add-mask::${LOCAL_REG_URL}"
-        echo "::add-mask::${LOCAL_REG_USER}"
-        echo "::add-mask::${LOCAL_REG_PASS}"
-        echo "LOCAL_REG_URL=${LOCAL_REG_URL}" >> $GITHUB_ENV
-        echo "LOCAL_REG_USER=${LOCAL_REG_USER}" >> $GITHUB_ENV
-        echo "LOCAL_REG_PASS=${LOCAL_REG_PASS}" >> $GITHUB_ENV
+      - name: Login to local container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.LOCAL_REG_URL }}
+          username: ${{ secrets.LOCAL_REG_USER }}
+          password: ${{ secrets.LOCAL_REG_PASS }}
 
-    - uses: actions/checkout@v4
-      with:
-        submodules: 'recursive'
-        token: ${{ secrets.SUBMODULE_PAT }}
+      - name: Install git
+        run: sudo apt-get update && sudo apt-get install -y git
 
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 'latest'
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
 
-    - name: Docker Login to Local Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.LOCAL_REG_URL }}
-        username: ${{ env.LOCAL_REG_USER }}
-        password: ${{ env.LOCAL_REG_PASS }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'latest'
 
-    - name: Install updated Skopeo
-      # This can be omitted once runner images have a version of Skopeo > 1.4.1
-      # See https://github.com/containers/skopeo/issues/1874
-      run: |
-        # sudo apt purge buildah golang-github-containers-common podman skopeo
-        # sudo apt autoremove --purge
-        REPO_URL="https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable"
-        source /etc/os-release
-        sudo sh -c "echo 'deb ${REPO_URL}/x${NAME}_${VERSION_ID}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:unstable.list"
-        sudo wget -qnv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/x${NAME}_${VERSION_ID}/Release.key -O Release.key
-        sudo apt-key add Release.key
-        sudo apt-get update
-        sudo apt-get install skopeo
-
-    - name: Configure CMake in Cached devcontainer
-      uses: devcontainers/ci@v0.3
-      env:
-        BUILDX_NO_DEFAULT_ATTESTATIONS: true
-      with:
-        imageName: ${{ env.LOCAL_REG_URL }}/secret-snail/localization-server-devcontainer
-        cacheFrom: ${{ env.LOCAL_REG_URL }}/secret-snail/localization-server-devcontainer
-        push: always
-        runCmd: |
-          cmake -B ./build -S ./ -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} && \
-          cd ./build && make -j8 && ctest
-
+      - name: Build and test in devcontainer
+        uses: devcontainers/ci@v0.3
+        env:
+          BUILDX_NO_DEFAULT_ATTESTATIONS: true
+        with:
+          imageName: ${{ secrets.LOCAL_REG_URL }}/secret-snail/localization-server-devcontainer
+          runCmd: |
+            cmake -B ./build -S ./ -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} && \
+            cd ./build && make -j8 && ctest

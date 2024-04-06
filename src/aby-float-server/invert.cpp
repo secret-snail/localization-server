@@ -101,15 +101,6 @@ void BuildInvertCircuitDO(share** s_in[], int m, int n, share** s_res[],
   assert(m >= n);
   float zero = 0;
 
-  // svd overwrites with s_in with u matrix
-  // share*** s_in = new share**[m]; no need to copy shares because new circuits
-  // run by svd trash them anyway for(int i=0; i<m; i++) {
-  //    s_in[i] = new share*[n];
-  //    for (int j=0; j<n; j++) {
-  //        s_in[i][j]=_s_in[i][j];
-  //    }
-  //}
-
   share** s_w = new share*[m];    // aka sigma, only diag
   share*** s_v = new share**[n];  // nxn
   for (int i = 0; i < n; i++)

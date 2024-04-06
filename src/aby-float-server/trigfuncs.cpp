@@ -47,7 +47,6 @@ share* BuildSinCircuit(share* theta, BooleanCircuit* c) {
   // share *res = c->PutFPGate(theta, t1, SUB, bitlen, 1, no_status);
   // res = c->PutFPGate(res, t2, ADD, bitlen, 1, no_status);
 
-  //// TODO still has mem leaks
   // delete t1;
   // delete tFGate;
   // delete t2;
@@ -88,7 +87,6 @@ share* BuildCosCircuit(share* theta, BooleanCircuit* c) {
   // share *res = c->PutFPGate(oneGate, t1, SUB, bitlen, 1, no_status);
   // res = c->PutFPGate(res, t2, ADD, bitlen, 1, no_status);
 
-  //// TODO still has mem leaks
   // delete t1;
   // delete tFGate;
   // delete t2;

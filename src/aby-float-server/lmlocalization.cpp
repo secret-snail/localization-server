@@ -962,8 +962,6 @@ uint32_t test_lm_circuit(
     // This method only works for an output length of maximum 64 bits in
     // general, if the output length is higher you must use get_clear_value_ptr
     s_x[i]->get_clear_value_vec(&output, &out_bitlen, &out_nvals);
-    // s_out[i]->get_clear_value_ptr();
-
     // cout << *(float*)output << " ";
 
     x[i] = *(float*)output;

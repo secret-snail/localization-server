@@ -19,20 +19,12 @@
 const float GT_MIN_ER =
     1;  // (pose - ground truth) L2 norm less than this considered correct
 
-// Works for snail and hoffs test points for Loop Leak and SiSL
-// but broken on aby sisl ctest lm
-// const float JACOB_EPSILON = 0x0.0000bfp0;
-// const float MIN_ER = 1e-2;
-// below works for all tests
 const float JACOB_EPSILON = 0x0.0000c3p0;  // 25 mpc iterations
 const float MIN_ER = 1e-2;
 
-// ETH3D dataset
+// Another set of values that works for the ETH3D dataset.
 // const float JACOB_EPSILON = 0x0.000050p0;
 // const float MIN_ER = 5e-2;
-
-// const float JACOB_EPSILON=0x0.000007p0; // charuco cnail
-// const float JACOB_EPSILON = 1e-5;  // Hoff's origional parameters
 
 // maximum number of iterations
 // from opencv calibration.cpp - cvFindExtrinsicCameraParams2() = 20
@@ -40,7 +32,7 @@ const int GN_MAX_ITR = 30;
 const int LM_MAX_ITR = 30;
 const float LM_LAMBDA_INIT = 1e-3;
 const float LM_LAMBDA_MAX = 1e5;  // opencv default, works with hoff and ETH3D
-// const float LM_LAMBDA_MAX = 1e2;  // snail with aruco markers (may not be necessary)
+// const float LM_LAMBDA_MAX = 1e2;  // snail with aruco markers may require smaller lambda max
 const float LM_LAMBDA_MIN = 1e-5;
 
 // Debugging tools

@@ -47,12 +47,14 @@ void BuildSignCircuit(share* a, share* b, BooleanCircuit* c) {
   // WARNING:
   // cannot simply set msb of a to msb of b because
   // of the case when b is 0.0
-  // TODO - fix memory leak
   uint32_t zero = 0;
   share* zero_gate = c->PutCONSGate((uint32_t*)&zero, 32);
   share* cmp = c->PutFPGate(b, zero_gate, CMP);
   share* tmp = c->PutINVGate(cmp);
   a->set_wire_id(31, tmp->get_wire_id(0));
+  delete zero_gate;
+  delete cmp;
+  delete tmp;
 }
 
 share* BuildFMAXCircuit(share* a, share* b, BooleanCircuit* c) {
@@ -65,11 +67,11 @@ share* BuildFMAXCircuit(share* a, share* b, BooleanCircuit* c) {
 
 void BuildNegativeCircuit(share* a, BooleanCircuit* c) {
   // flip msb
-  // TODO - fix memory leak
   share* tmp = a->get_wire_ids_as_share(31);
   tmp = c->PutINVGate(tmp);
   // cout << tmp->get_bitlength() << endl; // tmp is one bit
   a->set_wire_id(31, tmp->get_wire_id(0));
+  delete tmp;
 }
 
 share* BuildPythagCircuit(share* a, share* b, BooleanCircuit* c,
@@ -83,8 +85,8 @@ share* BuildPythagCircuit(share* a, share* b, BooleanCircuit* c,
   delete sum;
   return res;
 
-  // Doing the same pythag optimization as cleartext is
-  // actually slower than the long way to compute pythag
+  // Doing the same pythag optimization as in Numerical Recipes (below) is
+  // actually slower than the long way to compute pythag (above).
   // float zero = 0;
   // share* zero_gate = c->PutCONSGate((uint32_t*)&zero, bitlen);
   // float one = 1;
@@ -2279,9 +2281,6 @@ uint32_t test_fabs_circuit(e_role role, const std::string& address,
   // This method only works for an output length of maximum 64 bits in general,
   // if the output length is higher you must use get_clear_value_ptr
   out->get_clear_value_vec(&output, &out_bitlen, &out_nvals);
-  // R[i]->get_clear_value_ptr();
-
-  // cout << out_bitlen << "jfjf" << endl;
   cout << *(float*)output << endl;
 
   delete party;
@@ -2336,9 +2335,6 @@ uint32_t test_fmax_circuit(e_role role, const std::string& address,
   // This method only works for an output length of maximum 64 bits in general,
   // if the output length is higher you must use get_clear_value_ptr
   out->get_clear_value_vec(&output, &out_bitlen, &out_nvals);
-  // R[i]->get_clear_value_ptr();
-
-  // cout << out_bitlen << "jfjf" << endl;
   cout << *(float*)output << endl;
 
   delete party;
@@ -2390,9 +2386,6 @@ uint32_t test_negative_circuit(e_role role, const std::string& address,
   // This method only works for an output length of maximum 64 bits in general,
   // if the output length is higher you must use get_clear_value_ptr
   out->get_clear_value_vec(&output, &out_bitlen, &out_nvals);
-  // R[i]->get_clear_value_ptr();
-
-  // cout << out_bitlen << "jfjf" << endl;
   cout << *(float*)output << endl;
 
   delete party;

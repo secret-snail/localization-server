@@ -13,10 +13,10 @@ using namespace std;
 
 Float BuildSinCircuit(Float a) {
   Float pi = Float(M_PI, PUBLIC);
-  return (a / pi).sin();  // circuit mutliplies by pi for some reason
+  return (a / pi).sin();  // circuit mutliplies by pi
 }
 
 Float BuildCosCircuit(Float a) {
   Float pi = Float(M_PI, PUBLIC);
-  return (a / pi).cos();  // circuit mutliplies by pi for some reason
+  return (a / pi).cos();  // circuit mutliplies by pi
 }

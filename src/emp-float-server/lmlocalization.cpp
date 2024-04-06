@@ -91,9 +91,6 @@ Float LMIteration(Float threeDPts[], Float y0[], int numPts, Float& f,
   Float** jacob = new Float*[numPts * 2];
   for (int p = 0; p < numPts * 2; p++) {
     jacob[p] = static_cast<Float*>(operator new[](6 * sizeof(Float)));
-    // for(int pp=0; pp<6; pp++) {
-    //     jacob[p][pp] = Float(0.0, PUBLIC);
-    // }
   }
   for (int j = 0; j < 6; j++) {  // for each DOF
     // perturb x
@@ -156,10 +153,6 @@ Float LMIteration(Float threeDPts[], Float y0[], int numPts, Float& f,
   for (int p = 0; p < 6; p++) {
     // add fletcher column-wise to JtJ
     Float fletcher = lambda * JtJ[p][p];
-
-    // for (int pp=0; pp<6; pp++) {
-    //     JtJ[pp][p] = JtJ[pp][p] + fletcher;
-    // }
     JtJ[p][p] = JtJ[p][p] + fletcher;
   }
 

@@ -102,9 +102,6 @@ std::pair<bool, int> BuildGaussNewton(Float threeDPts[], Float y0[], int numPts,
     Float** jacob = new Float*[numPts * 2];
     for (int p = 0; p < numPts * 2; p++) {
       jacob[p] = static_cast<Float*>(operator new[](6 * sizeof(Float)));
-      // for(int pp=0; pp<6; pp++) {
-      //     jacob[p][pp] = Float(0.0, PUBLIC);
-      // }
     }
     for (int j = 0; j < 6; j++) {  // for each DOF
       // perturb x
@@ -114,7 +111,6 @@ std::pair<bool, int> BuildGaussNewton(Float threeDPts[], Float y0[], int numPts,
       // project with epsilon
       Float* ytempHomog =
           static_cast<Float*>(operator new[](3 * numPts * sizeof(Float)));
-      // TODO - initialize?
       BuildProjectPointsCircuit(threeDPts, x, K, ytempHomog, numPts, true);
 
       // throw away last "row" of result,
@@ -158,9 +154,6 @@ std::pair<bool, int> BuildGaussNewton(Float threeDPts[], Float y0[], int numPts,
     for (int p = 0; p < 6; p++) {
       jacobI[p] =
           static_cast<Float*>(operator new[](2 * numPts * sizeof(Float)));
-      // for (int pp=0; pp<2*numPts; pp++) {
-      //     jacobI[p][pp] = Float(0.0, PUBLIC);
-      // }
     }
 
     BuildInvertCircuit(jacob, 2 * numPts, 6, jacobI);

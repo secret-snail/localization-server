@@ -78,11 +78,17 @@ hardware) is required for performance reasons.
 
 ### External Dependencies
 
-External source dependencies in `extern`:
+The core localization libraries (located in `src/aby-float-server/` and
+`src/emp-float-server/`) depend only on the respective MPC library in the
+`extern/` directory, namely:
 
 - [ABY](https://github.com/encryptogroup/ABY)
-- [Catch2](https://github.com/catchorg/Catch2)
 - [EMP-Toolkit](https://github.com/emp-toolkit)
+
+Tests and benchmarks have additional source dependencies in `extern/` except
+where noted:
+
+- [Catch2](https://github.com/catchorg/Catch2)
 - [OpenCV](https://github.com/opencv/opencv)
 - [Fixed Point Math Library](https://github.com/MikeLankamp/fpm) (direct import at `src/common/fixed_point.h`)
 - [Singular Value Decomposition](https://numerical.recipes/) (direct import at `test/common-test/cleartext-ref/svd.hpp`)
@@ -94,19 +100,37 @@ Other dependencies:
 - gcc
 - clang-format
 - python3
-- matplotlib
+  - numpy
+  - matplotlib
 
 ## Reproduce Results
 
-First, download the
-[eth3d dataset](https://www.eth3d.net/datasets#high-res-multi-view) with the
-following commands on the host (outside the container). These will specifically
-download the high-res multi-view undistorted images and ground truth scan
-evaluation from eth3d. Note this requires ~20GB of storage.
+The easiest way to run the experiments is via the provided Docker container.
+Build and start the container with the following commands.
 
 ```bash
-sudo apt-get install p7zip-full
-mkdir ./data-eth3d
+docker/build.sh  # 30 minutes
+
+mkdir -p data-eth3d
+mkdir -p results
+mkdir -p plots
+
+docker run -it --rm --init \
+  --net=host \
+  --name snail-tester \
+  --volume "$(pwd)/data-eth3d":/snail/data-eth3d \
+  --volume "$(pwd)/results":/snail/results \
+  --volume "$(pwd)/plots":/snail/plots \
+  snail-server bash
+```
+
+Download the [eth3d dataset](https://www.eth3d.net/datasets#high-res-multi-view)
+with the following commands (running inside the container). This will download
+the high-res multi-view undistorted images and ground truth scan evaluation from
+eth3d. Note this requires ~20GB of storage.
+
+```bash
+sudo apt install -y p7zip-full curl
 curl https://www.eth3d.net/data/multi_view_training_dslr_undistorted.7z -o im.7z
 7z x im.7z -o./data-eth3d/
 rm im.7z
@@ -115,29 +139,13 @@ curl https://www.eth3d.net/data/multi_view_training_dslr_scan_eval.7z -o gt.7z
 rm gt.7z
 ```
 
-The easiest way to run the experiments is via the provided Docker container.
-Build and start the container with the following commands.
-
-```bash
-docker/build.sh  # 30 minutes
-
-mkdir -p results
-
-docker run -it --rm --init \
-  --net=host \
-  --name snail-tester \
-  --volume "$(pwd)/data-eth3d":/snail/data-eth3d \
-  --volume "$(pwd)/results":/snail/results \
-  snail-server bash
-```
-
 Run `ctest` inside the `build` directory of the container to verify the build.
 The tests should pass in roughly 15 minutes. Machine with less than 19 GB of
 memory may fail some of the ABY tests due to memory constraints. Machines with
 sufficient memory may still occasionally fail the `ABY large SVD` test due to
 memory errata.
 
-Run the experiments with the following commands. Note some of the commands must
+Run the experiments with the following commands. Note some commands must
 be run outside the container due to network setup requirements. They are marked
 with `# outside container`. Each experiment outputs information to the console
 for example the image being tested, how many points are being used, the ground
@@ -147,7 +155,6 @@ are used to parse the results in subsequent plotting. The characters which look
 like `...:::555/44/33/2/1` correspond to the different phases and iterations of
 the SVD algorithm. Lines which look like "Trial x with y randomly selected
 points..." show the progress of the experiment.
-
 
 ```bash
 # ABY and EMP single-iteration localization tests.
@@ -171,24 +178,24 @@ LAT=5msec source scripts/network_setup.sh # outside container
 scripts/emp_float_benchmark_run_latency.sh # 3 hours
 
 source scripts/network_teardown.sh # outside container
-exit # stop the container
 ```
 
-Install dependencies for the plotter scripts (requires python3 and pip3).
+At this point all data has been collected and the plots can be generated. Inside
+the container, install the dependencies for the plotter scripts.
 
 ```bash
-./plotter_deps.sh
+sudo apt install -y python3 python3-pip
+pip3 install numpy matplotlib
 ```
 
-Plot the results. The outputs are stored in `plots/` and can be matched to
-figures in the paper (see [claims](claims.md)). The time required to exactly
-reproduce the experiments from the paper is large thus the number of averaged
-trials for each experiment has been reduced from results shown in the paper.
-To run an exact reproduction, the scripts in `scripts/*_run.sh` may be edited to
-run 5 trials and 8 frames.
+Plot the results with the following commands. The outputs are stored in `plots/`
+and can be matched to figures in the paper (see [claims](claims.md)). The time
+required to exactly reproduce the experiments from the paper is large thus the
+number of averaged trials for each experiment has been reduced from results
+shown in the paper. To run an exact reproduction, the scripts in
+`scripts/*_run.sh` may be edited to run 5 trials and 8 frames.
 
 ```bash
-mkdir plots
 scripts/emp_vs_aby_plot.sh
 scripts/loopleak_vs_dataobl_plot.sh
 scripts/emp_float_benchmark_plot.sh
@@ -196,6 +203,8 @@ scripts/netio_plot.sh
 scripts/num_arith_ops_plot.sh
 scripts/mult_add_fixed_float_time_plot.sh
 ```
+
+To exit the container, type `exit`.
 
 ## Robotic Snail Demo
 

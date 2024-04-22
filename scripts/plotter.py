@@ -11,6 +11,9 @@ import sys
 import json
 import re
 
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+
 sentinalStr = "SeNtInAl"
 tmpFile = "plotlines.tmp"
 maxColumns = 7

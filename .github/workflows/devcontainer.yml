@@ -14,13 +14,6 @@ jobs:
     runs-on: [snail-runners]
 
     steps:
-      - name: Login to local container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ secrets.LOCAL_REG_URL }}
-          username: ${{ secrets.LOCAL_REG_USER }}
-          password: ${{ secrets.LOCAL_REG_PASS }}
-
       - name: Install git
         run: sudo apt-get update && sudo apt-get install -y git
 
@@ -37,7 +30,6 @@ jobs:
         env:
           BUILDX_NO_DEFAULT_ATTESTATIONS: true
         with:
-          imageName: ${{ secrets.LOCAL_REG_URL }}/secret-snail/localization-server-devcontainer
           runCmd: |
             cmake -B ./build -S ./ -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} && \
             cd ./build && make -j8 && ctest

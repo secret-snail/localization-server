@@ -9,7 +9,7 @@ orientation of a camera is determined from an image and environmental map. This
 project implements a secure localization server that uses MPC to compute a
 camera pose without revealing the image or map. For more information, see the
 paper on [arxiv](https://arxiv.org/abs/2403.14916), published at
-[PETs 2023](https://petsymposium.org/2024/paperlist.php).
+[PETs 2024](https://petsymposium.org/2024/paperlist.php).
 
 ## Repository Structure
 
